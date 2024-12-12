@@ -1,8 +1,8 @@
-# Netflix Content Analysis Project
+# Netflix Movies and TV Shows Data Analysis using SQL
 
 ## Overview
 
-This project involves a comprehensive analysis of Netflix's movies and TV shows data using SQL. The goal is to extract valuable insights and answer various business questions based on the dataset. The following README provides a detailed account of the project's objectives, business problems, solutions, findings, and conclusions.
+For this research, a thorough SQL analysis of Netflix's movie and TV show data is being conducted. The objective is to use the dataset to derive insightful information and provide answers to a range of business queries. A thorough description of the project's goals, business issues, solutions, findings, and conclusions may be found in the README that follows.
 
 ## Objectives
 
@@ -15,7 +15,7 @@ This project involves a comprehensive analysis of Netflix's movies and TV shows 
 
 The data for this project is sourced from the Kaggle dataset:
 
-- **Dataset Link**: [Movies Dataset]('https://www.kaggle.com/datasets/shivamb/netflix-shows?resource=download')
+- **Dataset Link**: [Movies Dataset](https://www.kaggle.com/datasets/shivamb/netflix-shows?resource=download)
 
 ### Schema
 
