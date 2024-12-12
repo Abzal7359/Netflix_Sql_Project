@@ -49,3 +49,84 @@ GROUP BY 1;
 ```
 **Objective:** Determine the distribution of content types on Netflix.
 
+### 2. Find the Most Common Rating for Movies and TV Shows
+```sql
+(SELECT type, rating 
+ FROM netflix 
+ WHERE type = 'Movie' 
+ GROUP BY type, rating 
+ ORDER BY COUNT(*) DESC 
+ LIMIT 1)
+
+UNION ALL
+
+(SELECT type, rating 
+ FROM netflix 
+ WHERE type = 'TV Show' 
+ GROUP BY type, rating 
+ ORDER BY COUNT(*) DESC 
+ LIMIT 1);
+```
+**Objective:** Identify the most frequently occurring rating for each type of content.
+
+### 3. List All Movies Released in a Specific Year (e.g., 2020)
+```sql
+SELECT * 
+FROM netflix
+WHERE release_year = 2020;
+```
+**Objective:** Retrieve all movies released in a specific year.
+
+### 4.Find the Top 5 Countries with the Most Content on Netflix
+```sql
+SELECT 
+    UPPER(TRIM(UNNEST(STRING_TO_ARRAY(country, ',')))) AS country, 
+    COUNT(*)
+FROM netflix 
+WHERE country IS NOT NULL
+GROUP BY 1
+ORDER BY 2 DESC 
+LIMIT 5;
+```
+**Objective:** Identify the top 5 countries with the highest number of content items.
+
+### 5. Identify the Longest Movie
+```sql
+SELECT * 
+FROM netflix 
+WHERE type = 'Movie' AND duration IS NOT NULL
+ORDER BY CAST(SPLIT_PART(duration, ' ', 1) AS INTEGER) DESC 
+LIMIT 1;
+```
+**Objective:** Find the movie with the longest duration.
+
+### 6. Find Content Added in the Last 5 Years
+```sql
+SELECT show_id, date_added::DATE 
+FROM netflix 
+WHERE date_added::DATE >= CURRENT_DATE - INTERVAL '5 years';
+```
+**Objective:** List content added to Netflix in the last 5 years.
+
+### 7. Find All Movies/TV Shows by Director 'Rajiv Chilaka'
+```sql
+WITH movies_TV_shows AS (
+    SELECT *, 
+           TRIM(UNNEST(STRING_TO_ARRAY(director, ','))) AS director1 
+    FROM netflix
+)
+SELECT * 
+FROM movies_TV_shows 
+WHERE director1 = 'Rajiv Chilaka';
+```
+**Objective:** Retrieve all movies and TV shows directed by 'Rajiv Chilaka'.
+
+### 7. List All TV Shows with More than 5 Seasons
+```sql
+SELECT * 
+FROM netflix 
+WHERE type = 'TV Show' 
+  AND duration IS NOT NULL 
+  AND SPLIT_PART(duration, ' ', 1)::INT > 5;
+```
+**Objective:**  List TV shows with more than 5 seasons.
