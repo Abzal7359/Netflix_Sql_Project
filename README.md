@@ -15,7 +15,7 @@ This project involves a comprehensive analysis of Netflix's movies and TV shows 
 
 The data for this project is sourced from the Kaggle dataset:
 
-- **Dataset Link**: [Movies Dataset](#)
+- **Dataset Link**: [Movies Dataset]('https://www.kaggle.com/datasets/shivamb/netflix-shows?resource=download')
 
 ### Schema
 
@@ -121,7 +121,7 @@ WHERE director1 = 'Rajiv Chilaka';
 ```
 **Objective:** Retrieve all movies and TV shows directed by 'Rajiv Chilaka'.
 
-### 7. List All TV Shows with More than 5 Seasons
+### 8. List All TV Shows with More than 5 Seasons
 ```sql
 SELECT * 
 FROM netflix 
@@ -130,3 +130,97 @@ WHERE type = 'TV Show'
   AND SPLIT_PART(duration, ' ', 1)::INT > 5;
 ```
 **Objective:**  List TV shows with more than 5 seasons.
+
+### 9. Count the Number of Content Items in Each Genre
+```sql
+SELECT 
+    TRIM(UNNEST(STRING_TO_ARRAY(listed_in, ','))) AS genre,
+    COUNT(*)  
+FROM netflix
+GROUP BY 1
+ORDER BY 2 DESC;
+```
+**Objective:** Count the number of content items available in each genre.
+
+### 10. Find Each Year and the Average Percentage of Content Released in India
+```sql
+WITH country_year_data AS (
+    SELECT 
+        trim(unnest(string_to_array(country, ','))) AS country, 
+        date_part('year', date_added::date) AS year 
+    FROM netflix
+),
+india_count AS (
+    SELECT 
+        country, 
+        COUNT(*) AS india_count 
+    FROM country_year_data 
+    WHERE country = 'India' 
+    GROUP BY country
+)
+SELECT 
+    cyd.country,
+    cyd.year,
+    COUNT(*) AS year_count,
+    ROUND((COUNT(*) * 1.0 / ic.india_count) * 100, 2) AS avg_year 
+FROM country_year_data cyd 
+LEFT JOIN india_count ic 
+ON cyd.country = ic.country
+WHERE cyd.country = 'India' 
+GROUP BY cyd.country, cyd.year, ic.india_count 
+ORDER BY avg_year DESC;
+```
+**Objective:** Analyze the percentage of content released in India each year.
+
+### 11. List All Movies That Are Documentaries
+```sql
+SELECT * 
+FROM netflix 
+WHERE listed_in LIKE '%Documentaries%';
+```
+**Objective:** Identify all Netflix movies categorized as documentaries.
+
+### 12. Find All Content Without a Director
+```sql
+SELECT * 
+FROM netflix
+WHERE director IS NULL;
+```
+**Objective:** List all content items that do not have a specified director.
+
+### 13. Find How Many Movies Actor 'Salman Khan' Appeared in During the Last 10 Years
+```sql
+SELECT * 
+FROM netflix 
+WHERE LOWER(casts) LIKE '%salman khan%' 
+AND release_year >= date_part('year', CURRENT_DATE) - 10;
+```
+**Objective:** Determine the number of movies featuring Salman Khan released in the last 10 years.
+
+### 14. Find the Top 10 Actors Who Have Appeared in the Highest Number of Movies Produced in India
+```sql
+SELECT 
+    trim(unnest(string_to_array(casts, ','))) AS actors,
+    COUNT(*) 
+FROM netflix 
+WHERE country = 'India'
+GROUP BY actors 
+ORDER BY COUNT(*) DESC
+LIMIT 10;
+```
+**Objective:** Identify the actors who have featured in the most movies produced in India.
+
+### 15. Categorize Content Based on the Presence of the Keywords 'Kill' and 'Violence'
+```sql
+SELECT content_type, COUNT(*)
+FROM (
+    SELECT *,
+           (CASE
+               WHEN LOWER(description) LIKE '% kill%' OR LOWER(description) LIKE '% violence%' THEN 'Bad'
+               ELSE 'Good'
+           END) AS content_type
+    FROM netflix
+) AS content_group
+GROUP BY content_type;
+```
+**Objective:** Categorize Netflix content into 'Good' or 'Bad' based on the presence of specific keywords.
